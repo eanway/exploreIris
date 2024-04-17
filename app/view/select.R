@@ -1,13 +1,15 @@
 box::use(
-  shiny[NS, selectInput]
+  shiny[NS, selectInput],
+  glue[glue]
 )
 
 #' @export
-ui <- function(id) {
+ui <- function(id, str_selection) {
   ns <- NS(id)
 
   selectInput(
-    ns("selection"), "Please select a species", "Loading, please wait"
+    ns("selection"), glue("Please select {str_selection}"),
+    NULL
   )
 }
 
