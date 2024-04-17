@@ -1,10 +1,11 @@
 box::use(
-  shiny[fluidPage, mainPanel, NS, sidebarLayout, sidebarPanel],
+  shiny[fluidPage, mainPanel, NS, sidebarLayout, sidebarPanel, tabsetPanel],
 )
 
 box::use(
   app/view/data,
-  app/view/select
+  app/view/select,
+  app/view/plot,
 )
 
 #' @export
@@ -19,7 +20,10 @@ ui <- function(id) {
         select$ui(ns("variable_y"), "a Y variable")
       ),
       mainPanel(
-        data$ui(ns("data"))
+        tabsetPanel(
+          data$ui(ns("data")),
+          plot$ui(ns("plot"))
+        )
       )
     )
   )
@@ -64,6 +68,10 @@ server <- function(id) {
 
     data$server(
       "data", rct_df_selected
+    )
+
+    plot$server(
+      "plot", rct_df_selected, rct_var_x, rct_var_y
     )
   })
 }

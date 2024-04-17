@@ -1,13 +1,16 @@
 box::use(
   DT[DTOutput],
-  shiny[NS],
+  shiny[NS, tabPanel],
 )
 
 #' @export
 ui <- function(id) {
   ns <- NS(id)
 
-  DTOutput(ns("data"))
+  tabPanel(
+    "Data",
+    DTOutput(ns("data"))
+  )
 }
 
 box::use(
