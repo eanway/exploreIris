@@ -38,6 +38,7 @@ box::use(
   app/logic/get_species[get_species],
   app/logic/select_data[select_data],
   app/logic/get_columns[get_columns],
+  app/logic/get_correlation[get_correlation],
 )
 
 #' @export
@@ -70,8 +71,13 @@ server <- function(id) {
       "data", rct_df_selected
     )
 
+    rct_correlation_coef <- reactive({
+      rct_df_selected() |>
+        get_correlation()
+    })
+
     plot$server(
-      "plot", rct_df_selected, rct_var_x, rct_var_y
+      "plot", rct_df_selected, rct_var_x, rct_var_y, rct_correlation_coef
     )
   })
 }
