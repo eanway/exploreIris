@@ -1,15 +1,12 @@
 box::use(
-  shiny[NS, plotOutput, tabPanel]
+  shiny[NS, plotOutput]
 )
 
 #' @export
 ui <- function(id) {
   ns <- NS(id)
 
-  tabPanel(
-    "Correlation",
-    plotOutput(ns("plot"))
-  )
+  plotOutput(ns("plot"))
 }
 
 box::use(

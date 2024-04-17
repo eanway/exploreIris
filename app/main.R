@@ -1,9 +1,8 @@
 box::use(
-  shiny[fluidPage, mainPanel, NS, sidebarLayout, sidebarPanel, tabsetPanel],
+  shiny[fluidPage, mainPanel, NS, sidebarLayout, sidebarPanel],
 )
 
 box::use(
-  app/view/data,
   app/view/select,
   app/view/plot,
 )
@@ -20,10 +19,7 @@ ui <- function(id) {
         select$ui(ns("variable_y"), "a Y variable")
       ),
       mainPanel(
-        tabsetPanel(
-          data$ui(ns("data")),
-          plot$ui(ns("plot"))
-        )
+        plot$ui(ns("plot"))
       )
     )
   )
@@ -58,6 +54,8 @@ server <- function(id) {
 
     rct_species <- select$server("species", rct_vec_species)
 
+    # can select the same column twice
+    # could add observe to update and remove duplicate option
     rct_var_x <- select$server("variable_x", rct_vec_columns)
 
     rct_var_y <- select$server("variable_y", rct_vec_columns)
@@ -66,10 +64,6 @@ server <- function(id) {
       rct_df_data() |>
         select_data(rct_species(), rct_var_x(), rct_var_y())
     })
-
-    data$server(
-      "data", rct_df_selected
-    )
 
     rct_correlation_coef <- reactive({
       rct_df_selected() |>
