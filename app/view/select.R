@@ -18,17 +18,17 @@ box::use(
 )
 
 #' @export
-server <- function(id, rct_vec_choices) {
+server <- function(id, rct_vec_choices, rct_state_selected) {
   moduleServer(id, function(input, output, session) {
 
     observe({
       updateSelectInput(
         inputId = "selection",
-        choices = rct_vec_choices()
+        choices = rct_vec_choices(),
+        selected = rct_state_selected()
       )
     }) |>
-      bindEvent(rct_vec_choices())
-
+      bindEvent(rct_vec_choices(), rct_state_selected())
 
     reactive({input$selection})
   })

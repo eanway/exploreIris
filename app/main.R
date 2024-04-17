@@ -32,7 +32,9 @@ ui <- function(id) {
 }
 
 box::use(
-  shiny[moduleServer, reactive, reactiveValues, observe, bindEvent],
+  shiny[
+    moduleServer, reactive, reactiveValues, observe, bindEvent, validate, need
+  ],
   datasets[iris]
 )
 
@@ -42,6 +44,7 @@ box::use(
   app/logic/get_columns[get_columns],
   app/logic/get_correlation[get_correlation],
   app/logic/update_state[update_state],
+  app/logic/get_state_value[get_state_value]
 )
 
 #' @export
@@ -61,7 +64,7 @@ server <- function(id) {
         get_column(label)
     })
 
-    rct_state <- select$server("state", rct_vec_states)
+    rct_state <- select$server("state", rct_vec_states, reactive(NULL))
 
     rct_vec_species <- reactive({
       rct_df_data() |>
@@ -73,13 +76,27 @@ server <- function(id) {
         get_columns()
     })
 
-    rct_species <- select$server("species", rct_vec_species)
+    rct_state_species <- reactive({
+      rctVal_states$df_states |>
+        get_state_value(rct_state(), species)
+    })
 
+    rct_species <- select$server("species", rct_vec_species, rct_state_species)
+
+    rct_state_var_x <- reactive({
+      rctVal_states$df_states |>
+        get_state_value(rct_state(), var_x)
+    })
+
+    rct_state_var_y <- reactive({
+      rctVal_states$df_states |>
+        get_state_value(rct_state(), var_y)
+    })
     # can select the same column twice
     # could add observe to update and remove duplicate option
-    rct_var_x <- select$server("variable_x", rct_vec_columns)
+    rct_var_x <- select$server("variable_x", rct_vec_columns, rct_state_var_x)
 
-    rct_var_y <- select$server("variable_y", rct_vec_columns)
+    rct_var_y <- select$server("variable_y", rct_vec_columns, rct_state_var_y)
 
     observe({
       rctVal_states$df_states <- rctVal_states$df_states |>
@@ -90,6 +107,12 @@ server <- function(id) {
       bindEvent(input$save_state)
 
     rct_df_selected <- reactive({
+      validate(
+        need(rct_species(), "Please select a species"),
+        need(rct_var_x(), "Please select an X variable"),
+        need(rct_var_y(), "Please select a Y variable")
+      )
+
       rct_df_data() |>
         select_data(rct_species(), rct_var_x(), rct_var_y())
     })
