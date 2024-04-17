@@ -1,10 +1,10 @@
-get_species <- function(df_data) {
+get_column <- function(df_data, column) {
   box::use(
     dplyr[pull]
   )
 
   df_data |>
-    pull(Species) |>
+    pull({{ column }}) |>
     unique() |>
     sort()
 }
