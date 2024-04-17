@@ -70,7 +70,6 @@ server <- function(id) {
     })
 
     # update existing states
-
     rct_state <- select$server("state", rct_vec_states, reactive(input$label))
 
     # update state label
@@ -138,13 +137,8 @@ server <- function(id) {
     observe({
       rctVal_states$df_states <- rctVal_states$df_states |>
         delete_state(rct_state())
-    }) |>
-      bindEvent(input$delete_state)
 
-    observe({
-      updateTextInput(
-        inputId = "label", value = NULL
-      )
+      updateTextInput(inputId = "label", value = "")
     }) |>
       bindEvent(input$delete_state)
 
