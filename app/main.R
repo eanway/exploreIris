@@ -23,7 +23,7 @@ ui <- function(id) {
         textInput(ns("label"), "Label"),
         actionButton(ns("save_state"), "Save current state"),
         actionButton(ns("delete_state"), "Delete current state"),
-        selectInput(ns("state"), "Please select a state to load", NULL)
+        select$ui(ns("state"), "a state to load")
       ),
       mainPanel(
         plot$ui(ns("plot"))
@@ -70,19 +70,13 @@ server <- function(id) {
     })
 
     # update existing states
-    observe({
-      updateSelectInput(
-        inputId = "state",
-        choices = rct_vec_states(),
-        selected = input$label
-      )
-    }) |>
-      bindEvent(rct_vec_states())
+
+    rct_state <- select$server("state", rct_vec_states, reactive(input$label))
 
     # update state label
     rct_state_label <- reactive({
       rctVal_states$df_states |>
-        get_state_value(input$state, label)
+        get_state_value(rct_state(), label)
     })
 
     observe({
@@ -90,7 +84,7 @@ server <- function(id) {
         inputId = "label", value = rct_state_label()
       )
     }) |>
-      bindEvent(input$state)
+      bindEvent(rct_state())
 
     # species
     rct_vec_species <- reactive({
@@ -101,7 +95,7 @@ server <- function(id) {
     # species - update state
     rct_state_species <- reactive({
       rctVal_states$df_states |>
-        get_state_value(input$state, species)
+        get_state_value(rct_state(), species)
     })
 
     # species - get selected value
@@ -116,12 +110,12 @@ server <- function(id) {
     # columns - update state
     rct_state_var_x <- reactive({
       rctVal_states$df_states |>
-        get_state_value(input$state, var_x)
+        get_state_value(rct_state(), var_x)
     })
 
     rct_state_var_y <- reactive({
       rctVal_states$df_states |>
-        get_state_value(input$state, var_y)
+        get_state_value(rct_state(), var_y)
     })
 
     # columns - get selected value
@@ -143,7 +137,7 @@ server <- function(id) {
     # delete state
     observe({
       rctVal_states$df_states <- rctVal_states$df_states |>
-        delete_state(input$state)
+        delete_state(rct_state())
     }) |>
       bindEvent(input$delete_state)
 
