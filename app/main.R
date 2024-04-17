@@ -45,9 +45,7 @@ box::use(
   app/logic/select_data[select_data],
   app/logic/get_columns[get_columns],
   app/logic/get_correlation[get_correlation],
-  app/logic/update_state[update_state],
-  app/logic/get_state_value[get_state_value],
-  app/logic/delete_state[delete_state]
+  app/logic/state,
 )
 
 #' @export
@@ -75,7 +73,7 @@ server <- function(id) {
     # update state label
     rct_state_label <- reactive({
       rctVal_states$df_states |>
-        get_state_value(rct_state(), label)
+        state$read(rct_state(), label)
     })
 
     observe({
@@ -94,7 +92,7 @@ server <- function(id) {
     # species - update state
     rct_state_species <- reactive({
       rctVal_states$df_states |>
-        get_state_value(rct_state(), species)
+        state$read(rct_state(), species)
     })
 
     # species - get selected value
@@ -109,12 +107,12 @@ server <- function(id) {
     # columns - update state
     rct_state_var_x <- reactive({
       rctVal_states$df_states |>
-        get_state_value(rct_state(), var_x)
+        state$read(rct_state(), var_x)
     })
 
     rct_state_var_y <- reactive({
       rctVal_states$df_states |>
-        get_state_value(rct_state(), var_y)
+        state$read(rct_state(), var_y)
     })
 
     # columns - get selected value
@@ -127,7 +125,7 @@ server <- function(id) {
     # add or update state
     observe({
       rctVal_states$df_states <- rctVal_states$df_states |>
-        update_state(
+        state$update(
           input$label, rct_species(), rct_var_x(), rct_var_y()
         )
     }) |>
@@ -136,7 +134,7 @@ server <- function(id) {
     # delete state
     observe({
       rctVal_states$df_states <- rctVal_states$df_states |>
-        delete_state(rct_state())
+        state$delete(rct_state())
 
       updateTextInput(inputId = "label", value = "")
     }) |>

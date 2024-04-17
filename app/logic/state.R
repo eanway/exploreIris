@@ -1,4 +1,4 @@
-update_state <- function(
+update <- function(
     df_states, new_label, new_species, new_var_x, new_var_y) {
   box::use(
     dplyr[bind_rows, mutate, case_match]
@@ -35,3 +35,28 @@ update_state <- function(
   df_states |>
     bind_rows(df_new_state)
 }
+
+read <- function(df_states, state, value) {
+  box::use(
+    dplyr[filter, pull],
+    utils[head],
+  )
+
+  df_states |>
+    filter(label == state) |>
+    pull({{ value }}) |>
+    # in case there are multiple values, but that shouldn't be possible
+    # because the state addition and updating are in the same function / event
+    head(1)
+}
+
+
+delete <- function(df_states, state) {
+  box::use(
+    dplyr[filter]
+  )
+
+  df_states |>
+    filter(label != state)
+}
+
